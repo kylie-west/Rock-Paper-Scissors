@@ -92,13 +92,6 @@ function game() {
 
 	console.log("And the winner is...");
 
-	// Create suspense
-	for (i = 0; i < 3; i++) {
-		setTimeout(() => {
-			console.log("..."), 1000;
-		});
-	}
-
 	if (wins > losses) {
 		console.log("you!!! :D");
 	} else if (wins < losses) {
