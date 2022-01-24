@@ -45,8 +45,20 @@ function computerPlay() {
 function playRound() {
 	let computerSelection = computerPlay();
 
-	let playerSelection = prompt("Rock, paper, or scissors?");
-	playerSelection = playerSelection.toUpperCase();
+	let playerSelection;
+
+	while (
+		!(
+			playerSelection === rock ||
+			playerSelection === paper ||
+			playerSelection === scissors
+		)
+	) {
+		playerSelection = prompt("Rock, paper, or scissors?");
+		playerSelection = playerSelection.toUpperCase();
+
+		if (!playerSelection) return;
+	}
 
 	console.log(`Your selection: ${playerSelection}`);
 
@@ -81,6 +93,11 @@ async function game() {
 
 		let result = playRound();
 
+		if (!result) {
+			console.log("You don't want to play? Oh...okay...");
+			return;
+		}
+
 		if (result === win) {
 			wins++;
 		} else if (result === loss) {
@@ -88,7 +105,7 @@ async function game() {
 		} else if (result === tie) {
 			ties++;
 		} else {
-			console.error("The result for this round is invalid.");
+			console.error("Invalid result.");
 		}
 
 		console.log(`Wins: ${wins} Losses: ${losses} Ties: ${ties}`);
