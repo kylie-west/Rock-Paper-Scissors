@@ -67,12 +67,16 @@ function playRound() {
 	return result;
 }
 
-function game() {
+async function game() {
 	let wins = 0;
 	let losses = 0;
 	let ties = 0;
 
-	for (i = 1; i <= 5; i++) {
+	let i = 1;
+
+	console.log("Best of five?");
+
+	while (!(wins === 3 || losses === 3)) {
 		console.log(`Round ${i}, go!`);
 
 		let result = playRound();
@@ -88,6 +92,8 @@ function game() {
 		}
 
 		console.log(`Wins: ${wins} Losses: ${losses} Ties: ${ties}`);
+
+		i++;
 	}
 
 	console.log("And the winner is...");
