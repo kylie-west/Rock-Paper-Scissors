@@ -123,5 +123,3 @@ async function game() {
 		console.log("nobody. Lame...");
 	}
 }
-
-game();
