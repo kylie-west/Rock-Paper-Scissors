@@ -5,6 +5,10 @@ const win = "WIN";
 const loss = "LOSS";
 const tie = "TIE";
 
+let wins = 0;
+let losses = 0;
+let ties = 0;
+
 function determineResult(a, b) {
 	switch (true) {
 		case a === b:
@@ -42,84 +46,107 @@ function computerPlay() {
 	}
 }
 
-function playRound() {
+function playRound(playerSelection) {
 	let computerSelection = computerPlay();
-
-	let playerSelection;
-
-	while (
-		!(
-			playerSelection === rock ||
-			playerSelection === paper ||
-			playerSelection === scissors
-		)
-	) {
-		playerSelection = prompt("Rock, paper, or scissors?");
-		playerSelection = playerSelection.toUpperCase();
-
-		if (!playerSelection) return;
-	}
-
-	console.log(`Your selection: ${playerSelection}`);
-
-	const tieMessage = `%cThe computer also chose ${playerSelection}. It's a tie. :|`;
-	const winMessage = `%cThe computer chose ${computerSelection}! You win! :)`;
-	const lossMessage = `%cThe computer chose ${computerSelection}. You lose... :(`;
 
 	let result = determineResult(playerSelection, computerSelection);
 
 	if (result === win) {
-		console.log(winMessage, "color: green");
+		wins++;
 	} else if (result === loss) {
-		console.log(lossMessage, "color: red");
+		losses++;
 	} else if (result === tie) {
-		console.log(tieMessage, "color: yellow");
-	}
-
-	return result;
-}
-
-async function game() {
-	let wins = 0;
-	let losses = 0;
-	let ties = 0;
-
-	let i = 1;
-
-	console.log("Best of five?");
-
-	while (!(wins === 3 || losses === 3)) {
-		console.log(`Round ${i}, go!`);
-
-		let result = playRound();
-
-		if (!result) {
-			console.log("You don't want to play? Oh...okay...");
-			return;
-		}
-
-		if (result === win) {
-			wins++;
-		} else if (result === loss) {
-			losses++;
-		} else if (result === tie) {
-			ties++;
-		} else {
-			console.error("Invalid result.");
-		}
-
-		console.log(`Wins: ${wins} Losses: ${losses} Ties: ${ties}`);
-
-		i++;
-	}
-
-	console.log("And the winner is...");
-
-	if (wins > losses) {
-		console.log("you!!! :D");
-	} else if (wins < losses) {
-		console.log("the computer!!! Better luck next time...");
+		ties++;
 	} else {
-		console.log("nobody. Lame...");
+		console.error("There was an issue determining the result.");
+	}
+
+	return {
+		result,
+		playerSelection,
+		computerSelection,
+	};
+}
+
+// UI STUFF
+
+const message = document.getElementById("msg");
+const subMessage = document.getElementById("sub-msg");
+const playerScore = document.getElementById("player-score");
+const computerScore = document.getElementById("computer-score");
+const playerImage = document.getElementById("player-image");
+const computerImage = document.getElementById("computer-image");
+const buttonSection = document.querySelector(".buttons");
+const buttons = Array.from(document.querySelector(".buttons").children);
+
+function capitalize(string) {
+	return string[0].toUpperCase() + string.slice(1).toLowerCase();
+}
+
+function gameOver() {
+	const newButton = document.createElement("button");
+	newButton.innerText = "Play again?";
+	newButton.addEventListener("click", () => {
+		location.reload();
+	});
+
+	buttonSection.replaceChildren(newButton);
+}
+
+function setImage(target, selection) {
+	let img = document.createElement("img");
+
+	img.setAttribute("src", `assets/${selection}.png`);
+
+	target.replaceChildren(img);
+}
+
+function choose(e) {
+	e.preventDefault();
+
+	const selection = e.target.innerText.toUpperCase();
+
+	const round = playRound(selection);
+	console.log(round);
+
+	playerScore.innerText = `Player: ${wins}`;
+	computerScore.innerText = `Computer: ${losses}`;
+
+	setImage(playerImage, round.playerSelection);
+	setImage(computerImage, round.computerSelection);
+
+	if (wins === 3) {
+		gameOver();
+
+		message.innerText = "Congratulations!";
+		subMessage.innerText = "You're the winner!";
+
+		return;
+	} else if (losses === 3) {
+		gameOver();
+
+		message.innerText = "Too bad...";
+		subMessage.innerText = "The computer won. :(";
+
+		return;
+	} else if (round.result === win) {
+		message.innerText = "You win!";
+
+		subMessage.innerText = `${capitalize(
+			round.playerSelection
+		)} beats ${round.computerSelection.toLowerCase()}!`;
+	} else if (round.result === loss) {
+		message.innerText = "You lose...";
+
+		subMessage.innerText = `${capitalize(
+			round.playerSelection
+		)} is beaten by ${round.computerSelection.toLowerCase()}.`;
+	} else {
+		message.innerText = "It's a tie.";
+		subMessage.innerText = `The computer also chose ${round.playerSelection.toLowerCase()}.`;
 	}
 }
+
+buttons.forEach((button) => {
+	button.addEventListener("click", choose);
+});
