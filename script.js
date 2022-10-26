@@ -96,7 +96,7 @@ function gameOver() {
 function setImage(target, selection) {
 	let img = document.createElement("img");
 
-	img.setAttribute("src", `assets/${selection.toLowerCase}.png`);
+	img.setAttribute("src", `assets/${selection.toLowerCase()}.png`);
 
 	target.replaceChildren(img);
 }
